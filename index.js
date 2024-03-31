@@ -1,5 +1,5 @@
 const express = require("express");
-const port = 3000 || process.env.PORT;
+const port = 3005 || process.env.PORT;
 const app = express();
 const cors = require("cors");
 const dotenv = require("dotenv").config();
@@ -19,28 +19,35 @@ const getEmailAndPass = async (email, pass) => {
 };
 
 app.post("/", async (req, res) => {
-  const userInfo = [req.body.nome, req.body.email, req.body.senha];
   try {
-    const validateUserName = userInfo[0].length > 3;
-    const validateEmail =
-      userInfo[1].includes("@") == true && userInfo[1].includes(".") == true;
-    const validePassword =
-      userInfo[2].length > 7 &&
-      userInfo[2].search(/[A-Z]/) != -1 &&
-      userInfo[2].search(/[-\#\$\.\%\&\*\@\?\!]/) != -1;
+    const userInfo = [req.body.nome, req.body.email, req.body.senha];
+    console.log(userInfo[0]);
+    const validateCadasteInfo = async () => {
+      const validateUserName = userInfo[0].length > 3;
+      const validateEmail =
+        userInfo[1].includes("@") && userInfo[1].includes(".");
+      const validePassword =
+        userInfo[2].length > 7 &&
+        userInfo[2].search(/[A-Z]/) != -1 &&
+        userInfo[2].search(/[-\#\$\.\%\&\*\@\?\!]/) != -1;
+      return validateUserName && validateEmail && validePassword;
+    };
+    const isValid = await validateCadasteInfo();
+    console.log(isValid);
     const existEmail = await getEmailAndPass(req.body.email);
-    if (existEmail != "") {
+    if (existEmail) {
       res.status(400).send("Bad Request");
     } else {
-      if (validateUserName && validateEmail && validePassword) {
-        res.status(200).send("Succesfull");
+      if (isValid) {
+        res.status(200).send("Successful");
         await createUser(req.body.nome, req.body.email, req.body.senha);
       } else {
-        res.status(406).send("error");
+        res.status(406).send("Error");
       }
     }
   } catch (error) {
     console.log(error);
+    res.status(500).send("Internal Server Error");
   }
 });
 app.get("/:email/:pass", async (req, res) => {
