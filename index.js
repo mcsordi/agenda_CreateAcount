@@ -19,8 +19,8 @@ const getEmailAndPass = async (email, pass) => {
 };
 
 app.post("/", async (req, res) => {
+  const userInfo = [req.body.nome, req.body.email, req.body.senha];
   try {
-    const userInfo = [req.body.nome, req.body.email, req.body.senha];
     const validateUserName = userInfo[0].length > 3;
     const validateEmail =
       userInfo[1].includes("@") == true && userInfo[1].includes(".") == true;
@@ -29,7 +29,6 @@ app.post("/", async (req, res) => {
       userInfo[2].search(/[A-Z]/) != -1 &&
       userInfo[2].search(/[-\#\$\.\%\&\*\@\?\!]/) != -1;
     const existEmail = await getEmailAndPass(req.body.email);
-
     if (existEmail != "") {
       res.status(400).send("Bad Request");
     } else {
@@ -48,10 +47,8 @@ app.get("/:email/:pass", async (req, res) => {
   const emailUser = req.params.email;
   const passUser = req.params.pass;
   const returnResponse = await getEmailAndPass(emailUser);
-
   if (returnResponse != "") {
     const returnResponseEmail = await returnResponse[0].email;
-
     const returnResponsePass = await returnResponse[0].pass;
     if (returnResponseEmail == emailUser && returnResponsePass == passUser) {
       res.status(200).send();
