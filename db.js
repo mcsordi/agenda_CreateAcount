@@ -4,7 +4,7 @@ const connection = async () => {
   if (global.connection && global.connection.state != "disconnected")
     return global.connection;
   const mysql = require("mysql2/promise");
-  const connector = mysql.createConnection(process.env.DATABASE_URL);
+  const connector = mysql.createConnection(process.env.DATABASE);
   console.log("conectou ao BD");
   global.connection = connector;
   return connector;
