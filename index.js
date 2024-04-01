@@ -1,10 +1,8 @@
 const express = require("express");
 const port = 3007 || process.env.PORT;
 const app = express();
-const cors = require("cors");
 const dotenv = require("dotenv").config();
 app.use(express.json());
-app.use(cors());
 const createUser = async (name, email, pass) => {
   const dataBase = require("./db");
 
