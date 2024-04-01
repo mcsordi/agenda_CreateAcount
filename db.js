@@ -21,16 +21,13 @@ const getEmailPassUsers = async (email, pass) => {
 
 const insertUsers = async (name, email, pass) => {
   const usersDB = await connection();
-  try {
-    const insertClient = await usersDB.query(
-      "INSERT INTO users (id,name, email, pass) VALUES ((select count(u.id)+1 as id  from users u),?, ?, ?)",
-      [name, email, pass]
-    );
 
-    return insertClient;
-  } catch (error) {
-    return error;
-  }
+  const insertClient = await usersDB.query(
+    "INSERT INTO users (id,name, email, pass) VALUES ((select count(u.id)+1 as id  from users u),?, ?, ?)",
+    [name, email, pass]
+  );
+
+  return insertClient;
 };
 
 module.exports = { getEmailPassUsers, insertUsers };

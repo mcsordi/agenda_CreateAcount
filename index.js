@@ -1,5 +1,5 @@
 const express = require("express");
-const port = 3005 || process.env.PORT;
+const port = 3007 || process.env.PORT;
 const app = express();
 const cors = require("cors");
 const dotenv = require("dotenv").config();
@@ -19,9 +19,8 @@ const getEmailAndPass = async (email, pass) => {
 };
 
 app.post("/", async (req, res) => {
+  const userInfo = [req.body.nome, req.body.email, req.body.senha];
   try {
-    const userInfo = [req.body.nome, req.body.email, req.body.senha];
-    console.log(userInfo[0]);
     const validateCadasteInfo = async () => {
       const validateUserName = userInfo[0].length > 3;
       const validateEmail =
@@ -33,14 +32,19 @@ app.post("/", async (req, res) => {
       return validateUserName && validateEmail && validePassword;
     };
     const isValid = await validateCadasteInfo();
-    console.log(isValid);
+    console.log("app.post ~ isValid:", isValid);
     const existEmail = await getEmailAndPass(req.body.email);
-    if (existEmail) {
+    if (existEmail.length > 0) {
       res.status(400).send("Bad Request");
     } else {
       if (isValid) {
         res.status(200).send("Successful");
-        await createUser(req.body.nome, req.body.email, req.body.senha);
+        const createUserMysql = await createUser(
+          req.body.nome,
+          req.body.email,
+          req.body.senha
+        );
+        return createUserMysql;
       } else {
         res.status(406).send("Error");
       }
